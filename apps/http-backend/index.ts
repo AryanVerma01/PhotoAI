@@ -39,11 +39,11 @@ app.get("/image/bulk",async (req,res)=>{
 // this is Webhook endpoint
 app.post("/fal-ai/train",async (req,res)=>{
 
-    const requestId = req.body.request_id
+    const requestId = req.body.request_id as string
 
     if(!requestId) return
 
-    await client.model.update({
+    await client.model.updateMany({
         where:{
             RequestId:requestId
         },
@@ -63,7 +63,7 @@ app.post("/fal-ai/train",async (req,res)=>{
 app.post("/fal-ai/generate",async (req,res)=>{
     const requestId = req.body.requestId
 
-    await client.outputImages.update({
+    await client.outputImages.updateMany({
         where:{
             requestId:requestId
         },

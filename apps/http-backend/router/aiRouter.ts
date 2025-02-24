@@ -2,6 +2,7 @@ import { Router } from "express";
 import { trainModel } from "@repo/common/schemas";
 import { outputImageModel } from "@repo/common/schemas";
 import { client } from "@repo/db/client"
+import { s3, write, S3Client } from "bun";
 
 export const aiRouter:Router = Router();
 
