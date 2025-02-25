@@ -28,6 +28,7 @@ model Model {
   ethnicity    modelEthnicityenum
   eyecolor     modelEyeColorenum
   bald         Boolean
+  zipUrl       String
   userId       String
   triggerWord  String?
   tensorPath   String?

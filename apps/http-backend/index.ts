@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import { aiRouter } from "./router/aiRouter.js";
 import { packRouter } from "./router/packRouter.js";
 import { client } from "@repo/db/client";
+import { S3Client } from "bun";
 
 dotenv.config();
 const app = express();
@@ -13,6 +14,25 @@ app.use(cors())
 
 app.use("/ai",aiRouter)
 app.use("/pack",packRouter)
+
+// S3 client generates presigned url by which u can send PUT Request with data to client
+app.get("/pre-signed-url", async (req, res) => {
+    const key = `models/${Date.now()}_${Math.random()}.zip`;
+    const url = S3Client.presign(key, {
+      method: "PUT",
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_SECRET_KEY,
+      endpoint: process.env.ENDPOINT,
+      bucket: process.env.BUCKET_NAME,
+      expiresIn: 60 * 5,
+      type: "application/zip",
+    });
+  
+    res.json({
+      url,
+      key,
+    });
+  });
 
 //  Prints all the genrated images 
 app.get("/image/bulk",async (req,res)=>{

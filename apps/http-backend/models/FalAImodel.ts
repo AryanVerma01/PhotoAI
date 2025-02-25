@@ -1,4 +1,4 @@
-import { BaseModel } from "./BaseModel";
+import { BaseModel } from "./BaseModel.js";
 import { fal } from "@fal-ai/client";
 
 fal.config({
@@ -10,7 +10,7 @@ export class FalAIModel extends BaseModel {
     super();
   }
 
-  private async genearateImage(prompt: string, tensorPath: string) {
+  public async genearateImage(prompt: string, tensorPath: string) {
     const { request_id, response_url } = await fal.queue.submit(
       "fal-ai/flux-lora",
       {
@@ -25,7 +25,7 @@ export class FalAIModel extends BaseModel {
   }
 
     //@ts-ignore
-  private async trainModel(zipUrl: string, triggerWord: string) {
+  public async trainModel(zipUrl: string, triggerWord: string) {
 
     // WebHooks used for better ASYNCHRONOUS calls
     const { request_id, response_url } = await fal.queue.submit(

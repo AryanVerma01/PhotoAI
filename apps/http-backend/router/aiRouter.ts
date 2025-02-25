@@ -3,7 +3,10 @@ import { trainModel } from "@repo/common/schemas";
 import { outputImageModel } from "@repo/common/schemas";
 import { client } from "@repo/db/client"
 import { s3, write, S3Client } from "bun";
+import { FalAIModel } from "../models/FalAImodel.js";    // Class
+import { parse } from "dotenv";
 
+const falAiClient = new FalAIModel()         // new object of FalAIModel class
 export const aiRouter:Router = Router();
 
 // recieves information and images of a real human
@@ -21,6 +24,8 @@ aiRouter.post("/training",async (req,res)=>{
             return
         }
 
+        const {request_id,response_url} = await falAiClient.trainModel("",parsedBody.data.triggerWord)
+
         // store model info in DB
         const response = await client.model.create({
             data:{
@@ -30,7 +35,10 @@ aiRouter.post("/training",async (req,res)=>{
                 ethnicity:parsedBody.data.ethnicity,
                 eyecolor:parsedBody.data.eyecolor,
                 bald:parsedBody.data.bald,
-                userId:userId
+                userId:userId,
+                triggerWord:parsedBody.data.triggerWord,
+                RequestId:request_id,
+                tensorPath:parsedBody.data.tensorPath
             }
         }) 
 
@@ -61,16 +69,30 @@ aiRouter.post("/generate",async (req,res)=>{
             return
         }
 
+        const model = await  client.model.findFirst({
+            where:{
+                id:parsedBody.data.modelId
+            }
+        })
+
+        if(!model || !model.tensorPath){
+            res.json({  
+                msg:"Model Not Found"
+            })
+            return
+        }
+
 
     // API logic to generate imges with prompt for specific model
-
+        const {request_id,response_url} = await falAiClient.genearateImage(parsedBody.data.prompt,model.tensorPath)
 
         const response = await client.outputImages.create({
             data:{
                 imageUrl:parsedBody.data.imageUrl,
                 userId:userId,
                 modelId:parsedBody.data.modelId,
-                prompt:parsedBody.data.prompt
+                prompt:parsedBody.data.prompt,
+                requestId:request_id
             }
         })
 

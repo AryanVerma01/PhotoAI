@@ -7,7 +7,9 @@ export const trainModel = z.object({
     ethnicity:z.enum(["White","Black","AsianAmerican","EastAsian","SouthEastAsian","SouthAsian","MiddleEastern","Pacific","Hispanic"]),
     eyecolor:z.enum(["Brown","Blue","Hazel","Gray","Black"]),
     bald:z.boolean(),
-    images:z.array(z.string())
+    zipUrL:z.string(),
+    tensorPath:z.string(),
+    triggerWord:z.string()
 })
 
 // enum further restrictsstring datatype to some particular strings
